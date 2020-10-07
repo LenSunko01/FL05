@@ -46,11 +46,17 @@ lexer = lex.lex()
 
 def p_program(p):
     '''program : program relation
-               | relation'''
+               | relation
+               | empty'''
     if len(p) == 3:
         p[0] = p[1] + '\n' + p[2]
-    else:
+    elif len(p) == 2:
         p[0] = p[1]
+
+
+def p_empty(p):
+    'empty :'
+    pass
 
 
 def p_relation(p):
@@ -69,9 +75,9 @@ def p_head(p):
 
 def p_atom(p):
     '''atom : ID
-            | ID LBRACKET atom RBRACKET atom
-            | ID LBRACKET atom RBRACKET
-            | ID atom'''
+            | ID LBRACKET atom_in RBRACKET atom_in
+            | ID LBRACKET atom_in RBRACKET
+            | ID atom_in'''
     if len(p) == 2:
         p[0] = "ID(" + p[1] + ")"
     elif len(p) == 6:
@@ -80,6 +86,15 @@ def p_atom(p):
         p[0] = "Atom(ID(" + p[1] + "), " + p[3] + ")"
     else:
         p[0] = "Atom(ID(" + p[1] + "), " + p[2] + ")"
+
+
+def p_atom_in(p):
+    '''atom_in :  LBRACKET atom_in RBRACKET
+               | atom'''
+    if len(p) == 4:
+        p[0] = p[2]
+    else:
+        p[0] = p[1]
 
 
 def p_body(p):
@@ -107,7 +122,7 @@ def p_conj(p):
 
 def p_lit(p):
     '''lit : LBRACKET disj RBRACKET
-           | atom'''
+           | atom_in'''
     if len(p) == 4:
         p[0] = p[2]
     else:
@@ -124,16 +139,14 @@ parser = yacc.yacc()
 def parse(file):
     with open(file, "r") as f:
         data = f.read()
-    try:
-        tree = parser.parse(data)
-        resfile = open(file + '.out', 'w')
-        resfile.write(str(tree))
-    except SyntaxError:
-        print("Unable to parse")
-
-
+    tree = parser.parse(data)
+    resfile = open(file + '.out', 'w')
+    resfile.write(str(tree))
 
 
 if __name__ == "__main__":
     filename = sys.argv[1]
-    parse(filename)
+    try:
+        parse(filename)
+    except SyntaxError:
+        print("Unable to parse")

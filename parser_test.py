@@ -1,7 +1,7 @@
 import os
 from parser import *
 
-PATH = 'test'
+PATH = 'tests'
 
 tests = os.listdir(PATH)
 
@@ -13,13 +13,16 @@ def test():
         print("Filename: " + str(file))
         ok = True
         try:
-            file = PATH + '/' + file
-            with open(file, "r") as f:
+            File = PATH + '/' + file
+            with open(File, "r") as f:
                 data = f.read()
             parser.parse(data)
         except SyntaxError:
             ok = False
-        if file[0] == 'a' and ok == False or file[0] == 'r' and ok == True:
+        if file[0] == 'a' and not ok:
+            print("Test failed")
+            testsnum += 1
+        elif file[0] == 'r' and ok:
             print("Test failed")
             testsnum += 1
         else:
