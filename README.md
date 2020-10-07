@@ -1,5 +1,5 @@
-Запуск парсера
-python parser.py filename
+Запуск парсера  
+python parser.py filename  
 
-Запуск тестов
+Запуск тестов  
 python parser_test.py
